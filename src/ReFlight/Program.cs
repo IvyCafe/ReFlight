@@ -1,6 +1,4 @@
-﻿using System.Drawing;
-
-namespace ReFlight;
+﻿namespace ReFlight;
 
 public static class Program
 {
@@ -26,6 +24,8 @@ public static class Program
             Y = 0,
             Z = 0,
             Direction = "↑",
+            DirectionZ = 0,
+            IsFlighting = false,
         };
 
         InfoDisplay(flightInfo);
@@ -41,6 +41,8 @@ public static class Program
         while (true)
         {
             State(flightInfo);
+
+            // Lack of Fuel
             if (flightInfo.Fuel <= 0)
             {
                 flightInfo.Fuel = 0;
@@ -55,13 +57,23 @@ public static class Program
                     Environment.Exit(0);
                 }
             }
-            if (flightInfo.Z < 0)
+
+            // Crash
+            if (flightInfo.Z < 0 && flightInfo.IsFlighting)
             {
                 Console.ForegroundColor = ConsoleColor.Red;
                 Console.WriteLine("Serious Accident: Crash");
                 Console.ResetColor();
                 Environment.Exit(0);
                 break;
+            }
+            
+            // V1 (Info)
+            if (!flightInfo.IsFlighting && flightInfo.Speed > 280)
+            {
+                Console.ForegroundColor = ConsoleColor.Blue;
+                Console.WriteLine("Info: V1 (Decision Speed)");
+                Console.ResetColor();
             }
 
             if (flightInfo.Power > 0)
@@ -80,8 +92,7 @@ public static class Program
                 "↓" => -flightInfo.Speed,
                 _ => 0,
             };
-            if (flightInfo.Z != 0)
-                flightInfo.Z += flightInfo.Speed;
+            flightInfo.Z += flightInfo.Speed * flightInfo.DirectionZ;
 
             await Task.Delay(5000);
         }
@@ -108,15 +119,17 @@ public static class Program
                 break;
 
             case "flight":
-                if (flightInfo.Speed < 20)
+                if (flightInfo.Speed < 240)
                     Console.WriteLine("Error: Lack of speed");
                 else
                 {
                     Console.WriteLine("Info: Take off");
-                    flightInfo.Z = 10;
+                    flightInfo.DirectionZ = 1;
+                    flightInfo.IsFlighting = true;
                 }
                 break;
 
+            case "xy":
             case "dir":
             case "direction":
                 Console.WriteLine("<Direction Mode>");
@@ -132,6 +145,23 @@ public static class Program
                 Console.WriteLine($"Info: current direction is {flightInfo.Direction}");
                 break;
 
+            case "z":
+                Console.WriteLine("<Direction Z Mode>");
+                ConsoleKeyInfo inputKeyZ = Console.ReadKey();
+                flightInfo.DirectionZ += inputKeyZ.Key switch
+                {
+                    ConsoleKey.W => 1,
+                    ConsoleKey.S => -1,
+                    _ => 0,
+                };
+                if (flightInfo.DirectionZ > 2)
+                    flightInfo.DirectionZ = 2;
+                else if (flightInfo.DirectionZ < -2)
+                    flightInfo.DirectionZ = -2;
+
+                Console.WriteLine($"Info: current z-direction is {flightInfo.DirectionZ}");
+                break;
+
             default:
                 Console.WriteLine("Error: Unexpected Command");
                 break;
@@ -142,6 +172,16 @@ public static class Program
 
     private static void State(FlightInfo flightInfo)
     {
+        string z = flightInfo.DirectionZ switch
+        {
+            2 => "↑↑",
+            1 => "↑",
+            0 => "・",
+            -1 => "↓",
+            -2 => "↓↓",
+            _ => "・"
+        };
+
         if (flightInfo.Fuel > 0)
             Console.ForegroundColor = ConsoleColor.Cyan;
         else
@@ -150,7 +190,8 @@ public static class Program
         Console.WriteLine($"| Speed: {flightInfo.Speed}");
         Console.WriteLine($"| Power: {flightInfo.Power}");
         Console.WriteLine($"| Fuel: {flightInfo.Fuel}");
-        Console.WriteLine($"| Direction: {flightInfo.Direction}");
+        Console.WriteLine($"| Direction XY: {flightInfo.Direction}");
+        Console.WriteLine($"| Direction Z: {z}");
         Console.WriteLine($"| X, Y, Z: {flightInfo.X}, {flightInfo.Y}, {flightInfo.Z}");
         Console.WriteLine("----------------------------");
         Console.ResetColor();
@@ -165,5 +206,7 @@ public static class Program
         public int Y { get; set; }
         public int Z { get; set; } // Altitude
         public required string Direction { get; set; }
+        public int DirectionZ { get; set; }
+        public bool IsFlighting { get; set; }
     }
 }
