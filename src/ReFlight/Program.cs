@@ -4,16 +4,16 @@ public static class Program
 {
     private static void Main()
     {
-        Console.WriteLine("-- Re:Doll Flight System --");
-        Console.WriteLine("");
-        Console.WriteLine("Hint: You can see hint with `help` command everytime.");
-        Console.WriteLine("Hint: You can exit with `Ctrl + C` everywhere. (but without save)");
-        Console.WriteLine("");
-
         Console.CancelKeyPress += (sender, e) =>
         {
             Console.ResetColor();
         };
+
+        Console.WriteLine("-- Re:Doll Flight System --");
+        Console.WriteLine("");
+        Info("You can see hint with `help` command everytime.");
+        Info("You can exit with `Ctrl + C` everywhere. (but without save)");
+        Console.WriteLine("");
 
         FlightInfo flightInfo = new()
         {
@@ -38,6 +38,7 @@ public static class Program
 
     private static async void InfoDisplay(FlightInfo flightInfo)
     {
+        await Task.Delay(1500);
         while (true)
         {
             State(flightInfo);
@@ -116,18 +117,18 @@ public static class Program
                 userCommand = Console.ReadLine() ?? "";
                 if (int.TryParse(userCommand, out int value)) {
                     flightInfo.Power = value;
-                    Console.WriteLine($"Info: current power is {value}");
+                    Info($"current power is {value}");
                 }
                 else
-                    Console.WriteLine("Error: Unexpected value");
+                    Error("Unexpected value");
                 break;
 
             case "flight":
                 if (flightInfo.Speed < 240)
-                    Console.WriteLine("Error: Lack of speed");
+                    Error("Lack of speed");
                 else
                 {
-                    Console.WriteLine("Info: Take off");
+                    Info("Take off");
                     flightInfo.DirectionZ = 1;
                     flightInfo.IsFlighting = true;
                 }
@@ -146,13 +147,13 @@ public static class Program
                     ConsoleKey.D => "→",
                     _ => "↑",
                 };
-                Console.WriteLine($"Info: current direction is {flightInfo.Direction}");
+                Info($"current direction is {flightInfo.Direction}");
                 break;
 
             case "z":
                 if (!flightInfo.IsFlighting)
                 {
-                    Console.WriteLine("Error: You have to `flight` command before `z` command.");
+                    Error("You have to `flight` command before `z` command.");
                     break;
                 }
                 Console.WriteLine("<Direction Z Mode>");
@@ -168,11 +169,11 @@ public static class Program
                 else if (flightInfo.DirectionZ < -2)
                     flightInfo.DirectionZ = -2;
 
-                Console.WriteLine($"Info: current z-direction is {flightInfo.DirectionZ}");
+                Info($"Current z-direction is {flightInfo.DirectionZ}");
                 break;
 
             default:
-                Console.WriteLine("Error: Unexpected Command");
+                Error("Unexpected Command");
                 break;
         }
 
@@ -205,6 +206,27 @@ public static class Program
         Console.WriteLine("----------------------------");
         Console.ResetColor();
     }
+
+    private static void Info(string value)
+    {
+        Console.ForegroundColor = ConsoleColor.Green;
+        Console.WriteLine("Hint: " + value);
+        Console.ResetColor();
+    }
+
+    private static void Error(string value)
+    {
+        Console.ForegroundColor = ConsoleColor.Red;
+        Console.WriteLine("Error: " + value);
+        Console.ResetColor();
+    }
+
+    // private static void Warn(string value)
+    // {
+    //     Console.ForegroundColor = ConsoleColor.Yellow;
+    //     Console.WriteLine("Warn: " + value);
+    //     Console.ResetColor();
+    // }
 
     public class FlightInfo
     {
