@@ -76,6 +76,10 @@ public static class Program
                 Console.ResetColor();
             }
 
+            // GPWS (Sink rate)
+            if ((flightInfo.Speed * flightInfo.DirectionZ) < -2500)
+                GPWS.SinkRate();
+
             if (flightInfo.Power > 0)
                 flightInfo.Fuel -= flightInfo.Power;
             flightInfo.Speed += flightInfo.Power / 5;
@@ -146,6 +150,11 @@ public static class Program
                 break;
 
             case "z":
+                if (!flightInfo.IsFlighting)
+                {
+                    Console.WriteLine("Error: You have to `flight` command before `z` command.");
+                    break;
+                }
                 Console.WriteLine("<Direction Z Mode>");
                 ConsoleKeyInfo inputKeyZ = Console.ReadKey();
                 flightInfo.DirectionZ += inputKeyZ.Key switch
