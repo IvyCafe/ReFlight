@@ -172,6 +172,21 @@ public static class Program
                 Info($"Current z-direction is {flightInfo.DirectionZ}");
                 break;
 
+            case "landing":
+                if (flightInfo.Speed > 500)
+                    Error("Slow down");
+                else if (flightInfo.Z > 1500)
+                    Error("Too high");
+                else
+                {
+                    Info("Landing");
+                    flightInfo.DirectionZ = 0;
+                    flightInfo.Z = 0;
+                    flightInfo.IsFlighting = false;
+                    flightInfo.Fuel = 10000;
+                }
+                break;
+
             default:
                 Error("Unexpected Command");
                 break;
