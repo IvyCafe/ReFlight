@@ -112,6 +112,17 @@ public static class Program
                 Environment.Exit(0);
                 break;
 
+            case "help":
+                Console.WriteLine("""
+                - - - - - - -
+                Exit the program: exit
+                - - - - - - -
+                Flight flow: power -> flight -> xy / z / power
+                Landing flow: z / power -> landing
+                - - - - - - -
+                """);
+                break;
+
             case "power":
                 Console.WriteLine("<Power Mode>");
                 userCommand = Console.ReadLine() ?? "";
