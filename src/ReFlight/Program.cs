@@ -149,8 +149,8 @@ public static class Program
             case "dir":
             case "direction":
                 Console.WriteLine("<Direction Mode>");
-                ConsoleKeyInfo inputKey = Console.ReadKey();
-                flightInfo.Direction = inputKey.Key switch
+                ConsoleKey inputKey = Console.ReadKey(true).Key;
+                flightInfo.Direction = inputKey switch
                 {
                     ConsoleKey.W => "↑",
                     ConsoleKey.A => "←",
@@ -168,8 +168,8 @@ public static class Program
                     break;
                 }
                 Console.WriteLine("<Direction Z Mode>");
-                ConsoleKeyInfo inputKeyZ = Console.ReadKey();
-                flightInfo.DirectionZ += inputKeyZ.Key switch
+                ConsoleKey inputKeyZ = Console.ReadKey(true).Key;
+                flightInfo.DirectionZ += inputKeyZ switch
                 {
                     ConsoleKey.W => 1,
                     ConsoleKey.S => -1,
