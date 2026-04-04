@@ -32,6 +32,7 @@ public static class Program
             IsFlighting = false,
         };
 
+        State(flightInfo);
         InfoDisplay(flightInfo);
         while (true)
         {
@@ -203,6 +204,7 @@ public static class Program
 
             case "clear":
                 Console.Clear();
+                State(flightInfo);
                 break;
 
             default:
@@ -236,14 +238,14 @@ public static class Program
             Console.ForegroundColor = ConsoleColor.Cyan;
         else
             Console.ForegroundColor = ConsoleColor.Red;
-        Console.WriteLine("----------------------------");
-        Console.WriteLine($"| Speed: {flightInfo.Speed}");
-        Console.WriteLine($"| Power: {flightInfo.Power} + {flightInfo.DirectionZ * -200}");
-        Console.WriteLine($"| Fuel: {flightInfo.Fuel}");
-        Console.WriteLine($"| Direction XY: {flightInfo.Direction}");
-        Console.WriteLine($"| Direction Z: {z}");
-        Console.WriteLine($"| X, Y, Z: {flightInfo.X}, {flightInfo.Y}, {flightInfo.Z}");
-        Console.WriteLine("----------------------------");
+        Console.WriteLine("------------------------------");
+        Console.WriteLine($"{$"| Speed: {flightInfo.Speed}", -30}");
+        Console.WriteLine($"{$"| Power: {flightInfo.Power} + {flightInfo.DirectionZ * -200}", -30}");
+        Console.WriteLine($"{$"| Fuel: {flightInfo.Fuel}", -30}");
+        Console.WriteLine($"{$"| Direction XY: {flightInfo.Direction}", -30}");
+        Console.WriteLine($"{$"| Direction Z: {z}", -30}");
+        Console.WriteLine($"{$"| X, Y, Z: {flightInfo.X}, {flightInfo.Y}, {flightInfo.Z}", -30}");
+        Console.WriteLine("------------------------------");
         Console.ResetColor();
 
         Console.SetCursorPosition(cursorLeft, cursorTop);
