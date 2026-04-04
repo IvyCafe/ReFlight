@@ -15,6 +15,10 @@ public static class Program
         Info("You can exit with `Ctrl + C` everywhere. (but without save)");
         Console.WriteLine("");
 
+        Console.WriteLine("Press Enter to continue...");
+        Console.ReadLine();
+        Console.Clear();
+
         FlightInfo flightInfo = new()
         {
             Speed = 0,
@@ -28,6 +32,7 @@ public static class Program
             IsFlighting = false,
         };
 
+        State(flightInfo);
         InfoDisplay(flightInfo);
         while (true)
         {
@@ -49,9 +54,8 @@ public static class Program
                 flightInfo.Fuel = 0;
                 if (flightInfo.Power > 0)
                     flightInfo.Power = 0;
-                flightInfo.Speed -= flightInfo.Speed / 5;
-                if (flightInfo.Z > 0)
-                    flightInfo.Z -= flightInfo.Speed;
+                if (flightInfo.Z > 1000)
+                    flightInfo.Z -= flightInfo.Speed / 10;
                 else if (flightInfo.Z <= 0 && flightInfo.Speed <= 0)
                 {
                     Console.WriteLine("You cannot flight due to lack of fuel");
@@ -78,12 +82,12 @@ public static class Program
             }
 
             // GPWS (Sink rate)
-            if ((flightInfo.Speed * flightInfo.DirectionZ) < -2500)
+            if ((flightInfo.Speed * flightInfo.DirectionZ) < -2000)
                 GPWS.SinkRate();
 
             if (flightInfo.Power > 0)
                 flightInfo.Fuel -= flightInfo.Power;
-            flightInfo.Speed += flightInfo.Power / 5;
+            flightInfo.Speed += flightInfo.AllPower / 5;
 
             flightInfo.X += flightInfo.Direction switch
             {
@@ -198,6 +202,11 @@ public static class Program
                 }
                 break;
 
+            case "clear":
+                Console.Clear();
+                State(flightInfo);
+                break;
+
             default:
                 Error("Unexpected Command");
                 break;
@@ -208,6 +217,13 @@ public static class Program
 
     private static void State(FlightInfo flightInfo)
     {
+        // int cursorLeft = Console.CursorLeft;
+        // int cursorTop = Console.CursorTop;
+        int cursorLeft = 0;
+        int cursorTop = 8;
+
+        Console.SetCursorPosition(0, 0);
+
         string z = flightInfo.DirectionZ switch
         {
             2 => "↑↑",
@@ -222,15 +238,17 @@ public static class Program
             Console.ForegroundColor = ConsoleColor.Cyan;
         else
             Console.ForegroundColor = ConsoleColor.Red;
-        Console.WriteLine("----------------------------");
-        Console.WriteLine($"| Speed: {flightInfo.Speed}");
-        Console.WriteLine($"| Power: {flightInfo.Power}");
-        Console.WriteLine($"| Fuel: {flightInfo.Fuel}");
-        Console.WriteLine($"| Direction XY: {flightInfo.Direction}");
-        Console.WriteLine($"| Direction Z: {z}");
-        Console.WriteLine($"| X, Y, Z: {flightInfo.X}, {flightInfo.Y}, {flightInfo.Z}");
-        Console.WriteLine("----------------------------");
+        Console.WriteLine("------------------------------");
+        Console.WriteLine($"{$"| Speed: {flightInfo.Speed}", -30}");
+        Console.WriteLine($"{$"| Power: {flightInfo.Power} + {flightInfo.DirectionZ * -200}", -30}");
+        Console.WriteLine($"{$"| Fuel: {flightInfo.Fuel}", -30}");
+        Console.WriteLine($"{$"| Direction XY: {flightInfo.Direction}", -30}");
+        Console.WriteLine($"{$"| Direction Z: {z}", -30}");
+        Console.WriteLine($"{$"| X, Y, Z: {flightInfo.X}, {flightInfo.Y}, {flightInfo.Z}", -30}");
+        Console.WriteLine("------------------------------");
         Console.ResetColor();
+
+        Console.SetCursorPosition(cursorLeft, cursorTop);
     }
 
     private static void Info(string value)
@@ -259,6 +277,7 @@ public static class Program
         public int Speed { get; set; }
         public int Fuel { get; set; }
         public int Power { get; set; }
+        public int AllPower => Power + DirectionZ * 200;
         public int X { get; set; }
         public int Y { get; set; }
         public int Z { get; set; } // Altitude
