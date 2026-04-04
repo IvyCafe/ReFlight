@@ -28,6 +28,8 @@ public static class Program
             IsFlighting = false,
         };
 
+        Console.Clear();
+
         InfoDisplay(flightInfo);
         while (true)
         {
@@ -208,6 +210,13 @@ public static class Program
 
     private static void State(FlightInfo flightInfo)
     {
+        // int cursorLeft = Console.CursorLeft;
+        // int cursorTop = Console.CursorTop;
+        int cursorLeft = 0;
+        int cursorTop = 10;
+
+        Console.SetCursorPosition(0, 0);
+
         string z = flightInfo.DirectionZ switch
         {
             2 => "↑↑",
@@ -231,6 +240,8 @@ public static class Program
         Console.WriteLine($"| X, Y, Z: {flightInfo.X}, {flightInfo.Y}, {flightInfo.Z}");
         Console.WriteLine("----------------------------");
         Console.ResetColor();
+
+        Console.SetCursorPosition(cursorLeft, cursorTop);
     }
 
     private static void Info(string value)
